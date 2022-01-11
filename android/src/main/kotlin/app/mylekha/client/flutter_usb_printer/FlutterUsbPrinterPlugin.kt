@@ -45,7 +45,7 @@ class FlutterUsbPrinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
             "connect" -> {
                 val vendorId = call.argument<Int>("vendorId")
                 val productId = call.argument<Int>("productId")
-                write(vendorId!!, productId!!, result)
+                connect(vendorId!!, productId!!, result)
             }
             "writeV2" -> {
                 val vendorId = call.argument<Int>("vendorId")

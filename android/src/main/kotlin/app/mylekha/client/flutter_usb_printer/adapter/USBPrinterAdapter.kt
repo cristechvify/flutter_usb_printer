@@ -123,27 +123,6 @@ class USBPrinterAdapter {
         }
         return true
     }
-
-    fun selectDeviceV2(vendorId: Int, productId: Int, bytes: ByteArray): Boolean {
-        this.bytes = bytes
-        if (mUsbDevice == null || mUsbDevice!!.vendorId != vendorId || mUsbDevice!!.productId != productId) {
-            closeConnectionIfExists()
-            val usbDevices = getDeviceList()
-            for (usbDevice in usbDevices) {
-                if (usbDevice.vendorId == vendorId && usbDevice.productId == productId) {
-                    Log.v(
-                            LOG_TAG,
-                            "Request for device: vendor_id: " + usbDevice.vendorId + ", product_id: " + usbDevice.productId
-                    )
-                    closeConnectionIfExists()
-                    mUSBManager!!.requestPermission(usbDevice, mPermissionIndent)
-                    return true
-                }
-            }
-            return false
-        }
-        return true
-    }
     
     fun selectDeviceV2(vendorId: Int, productId: Int, bytes: ByteArray): Boolean {
         this.bytes = bytes
@@ -190,56 +169,6 @@ class USBPrinterAdapter {
                         return false
                     }
                     Toast.makeText(mContext, "Device connected", Toast.LENGTH_SHORT).show()
-                    return if (usbDeviceConnection.claimInterface(usbInterface, true)) {
-                        mEndPoint = ep
-                        mUsbInterface = usbInterface
-                        mUsbDeviceConnection = usbDeviceConnection
-                        true
-                    } else {
-                        usbDeviceConnection.close()
-                        Log.e(LOG_TAG, "failed to claim usb connection")
-                        false
-                    }
-                }
-            }
-        }
-        return true
-    }
-    
-    private fun openConnectionV2(bytes: ByteArray): Boolean {
-        if (mUsbDevice == null) {
-            Log.e(LOG_TAG, "USB Deivce is not initialized")
-            return false
-        }
-        if (mUSBManager == null) {
-            Log.e(LOG_TAG, "USB Manager is not initialized")
-            return false
-        }
-        if (mUsbDeviceConnection != null) {
-            Log.i(LOG_TAG, "USB Connection already connected")
-            return true
-        }
-        val usbInterface = mUsbDevice!!.getInterface(0)
-        for (i in 0 until usbInterface.endpointCount) {
-            val ep = usbInterface.getEndpoint(i)
-            if (ep.type == UsbConstants.USB_ENDPOINT_XFER_BULK) {
-                if (ep.direction == UsbConstants.USB_DIR_OUT) {
-                    val usbDeviceConnection = mUSBManager!!.openDevice(mUsbDevice)
-                    if (usbDeviceConnection == null) {
-                        Log.e(LOG_TAG, "failed to open USB Connection")
-                        return false
-                    }
-               
-                    if (usbDeviceConnection.claimInterface(usbInterface, true)) {
-                        mEndPoint = ep
-                        mUsbInterface = usbInterface
-                        mUsbDeviceConnection = usbDeviceConnection
-                        Thread {
-                            val b = mUsbDeviceConnection!!.bulkTransfer(mEndPoint, bytes, bytes.size, 100000)
-                            Log.i(LOG_TAG, "Return Status: $b")
-                        }.start()
-                    }
-
                     return if (usbDeviceConnection.claimInterface(usbInterface, true)) {
                         mEndPoint = ep
                         mUsbInterface = usbInterface
