@@ -41,7 +41,7 @@ class FlutterUsbPrinter {
       "productId": productId,
       "data": data
     };
-    final bool returned = await _channel.invokeMethod('connect', params);
+    final bool returned = await _channel.invokeMethod('writeV2', params);
     return returned;
   }
 
