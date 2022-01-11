@@ -43,6 +43,12 @@ class FlutterUsbPrinterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           val productId = call.argument<Int>("productId")
           connect(vendorId!!, productId!!, result)
         }
+        "writeV2" -> {
+          val vendorId = call.argument<Int>("vendorId")
+          val productId = call.argument<Int>("productId")
+          val data = call.argument<ByteArray>("data")
+          writeV2(vendorId!!, productId!!, data, result)
+        }
         "close" -> {
           close(result)
         }
@@ -97,6 +103,15 @@ class FlutterUsbPrinterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       result.success(true)
     }
   }
+  
+  private fun writeV2(vendorId: Int, productId: Int, bytes: ByteArray?, result: Result) {
+    if (!adapter!!.selectDeviceV2(vendorId, productId, bytes!!)) {
+        result.success(false)
+    } else {
+        bytes.let { adapter!!.write(it) }
+        result.success(true)
+    }
+    }
 
   private fun close(result: Result) {
     adapter!!.closeConnectionIfExists()
