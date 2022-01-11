@@ -27,7 +27,19 @@ class FlutterUsbPrinter {
   Future<bool> connect(int vendorId, int productId) async {
     Map<String, dynamic> params = {
       "vendorId": vendorId,
-      "productId": productId
+      "productId": productId,
+    };
+    final bool returned = await _channel.invokeMethod('connect', params);
+    return returned;
+  }
+
+  /// [writeV2]
+  /// connect to a printer vai vendorId and productId and printer
+  Future<bool> writeV2(int vendorId, int productId,Uint8List data) async {
+    Map<String, dynamic> params = {
+      "vendorId": vendorId,
+      "productId": productId,
+      "data": data
     };
     final bool returned = await _channel.invokeMethod('connect', params);
     return returned;

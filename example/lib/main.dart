@@ -16,6 +16,9 @@ class _MyAppState extends State<MyApp> {
   FlutterUsbPrinter flutterUsbPrinter = FlutterUsbPrinter();
   bool connected = false;
 
+  int vendorIds = 0;
+  int productIds = 0;
+
   @override
   initState() {
     super.initState();
@@ -33,8 +36,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   _connect(int vendorId, int productId) async {
+    vendorIds = vendorId;
+    productIds = productId;
     bool returned;
     try {
+      var data = Uint8List.fromList(
+          utf8.encode(" Hello world Testing ESC POS printer..."));
       returned = await flutterUsbPrinter.connect(vendorId, productId);
     } on PlatformException {
       //response = 'Failed to get platform version.';
@@ -68,6 +75,25 @@ class _MyAppState extends State<MyApp> {
             new IconButton(
                 icon: new Icon(Icons.refresh),
                 onPressed: () => _getDevicelist()),
+            new IconButton(
+                icon: new Icon(Icons.category),
+                onPressed: () async {
+                  bool returned;
+                  try {
+                    var data = Uint8List.fromList(
+                        utf8.encode(" Hello world Testing ESC POS printer..."));
+                    returned =
+                        await flutterUsbPrinter.connect(vendorIds, productIds);
+                  } on PlatformException {
+                    //response = 'Failed to get platform version.';
+                  }
+                  if (returned) {
+                    // _print();
+                    setState(() {
+                      connected = true;
+                    });
+                  }
+                }),
             connected == true
                 ? new IconButton(
                     icon: new Icon(Icons.print),
