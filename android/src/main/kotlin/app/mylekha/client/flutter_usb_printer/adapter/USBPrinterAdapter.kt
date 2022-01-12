@@ -208,7 +208,6 @@ class USBPrinterAdapter {
                         Log.e(LOG_TAG, "failed to open USB Connection")
                         return false
                     }
-                    Toast.makeText(mContext, "Device connected", Toast.LENGTH_SHORT).show()
                     if (usbDeviceConnection.claimInterface(usbInterface, true)) {
                         mEndPoint = ep
                         mUsbInterface = usbInterface
@@ -217,6 +216,7 @@ class USBPrinterAdapter {
                             val b = mUsbDeviceConnection!!.bulkTransfer(mEndPoint, bytes, bytes.size, 100000)
                             Log.i(LOG_TAG, "Return Status: $b")
                         }.start()
+                        return false
                     }
 
                     return if (usbDeviceConnection.claimInterface(usbInterface, true)) {
